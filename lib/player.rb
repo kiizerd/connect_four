@@ -4,7 +4,7 @@ class Player
     @game = game
   end
 
-  def make_move
+  def make_move # returns move / false if taken
     move = (rand 6) + 1
     return @game.check_move(move) ? move : false
   end
