@@ -4,7 +4,7 @@ class Game
 
   def initialize
     make_board
-    get_players
+    get_players 1
   end
 
   def player_input(min, max) # loops until input inside range
@@ -24,6 +24,20 @@ class Game
     moves
   end
 
+  def check_move(move) # returns move / false if position taken
+    check = @board[-1][move - 1] == ' '
+    return check ? move : check_column(move - 1)
+  end
+
+  def check_column(col) # returns true / false if column full
+    @board[0..-2].map { |r| r[col] }.each_with_index do |pos, ind|
+      return ind + 2 if pos == ' '
+    end
+    false
+  end
+
+  private
+
   def make_board # returns empty 7x7 grid / 2d-array
     @board = []
     7.times do |i|
@@ -33,7 +47,7 @@ class Game
       end
     end
     @board
-  end
+  end            # resets @board instance variable
   
   def get_players(humans=nil) # returns array of new Players 
     @players = []
@@ -41,5 +55,5 @@ class Game
     count.times { @players << Human.new(self) }
     (2 - count).times { @players << Comp.new(self) }
     @players
-  end
+  end                         # resets @players instance variable
 end

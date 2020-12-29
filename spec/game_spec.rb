@@ -74,6 +74,74 @@ describe Game do
         allow(player).to receive(:make_move).and_return(rand 7)
       end
       expect(players).to all( receive(:make_move) )
+      game_moves.get_moves
+    end
+  end
+
+  describe "#check_move" do
+    
+    subject(:game_check) { described_class.new }
+    let(:board) { game_check.make_board }
+
+    context "when move is taken" do
+      before do
+        7.times { |i| board[i - 1][0] = 'O' }
+      end
+
+      it "should call check_column" do
+        expect(game_check).to receive(:check_column).with(0)
+        game_check.check_move(1)
+      end
+
+      it "should return false" do
+        check = game_check.check_move(1)
+        expect(check).to be(false)
+      end
+    end
+
+    context "when move is good" do
+      it "should return move" do
+        
+      end
+    end
+  end
+
+  describe "#check_column" do
+    
+    subject(:game_column) { described_class.new }
+    let(:board) { game_column.make_board }
+
+    context "column is full" do
+      before do
+        7.times { |i| board[i - 1][0] = 'O' }
+      end
+      
+      it "should return false" do
+        check = game_column.check_column(0)
+        expect(check).to be(false)
+      end
+    end
+
+    context "2nd row is empty" do
+      before do
+        board[-1][0] = 'O'  
+      end
+
+      it "should return 2" do
+        check = game_column.check_column(0)
+        expect(check).to eq(2)
+      end
+    end
+    
+    context "top row is empty" do
+      before do
+        6.times { |i| board[i - 1][0] = 'O' }
+      end
+
+      it "should return 7" do
+        check = game_column.check_column(0)
+        expect(check).to eq(7)
+      end
     end
   end
 
