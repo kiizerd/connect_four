@@ -1,30 +1,34 @@
 require_relative 'player'
-require_relative 'display'
 
 class Game
-
-  def initialize
-    @players = get_players
-  end
-  def make_board
-    board = []
-    7.times do |row|
-      row = []
-      7.times { row << [nil] }
-      board << row
+  def player_input(min, max)
+    input = gets.chomp.to_i
+    until verify_input(input, min, max)
+      input = gets.chomp.to_i
     end
-    board
+    input
   end
 
-  def get_players
-    @players = [Player.new]*2
+  def verify_input(input, min, max)
+    return input >= min && input <= max ? input : false 
   end
 
-  def get_moves
-    moves = []
-    moves << @players.first.make_move
-    moves << @players.last.make_move
-    moves
+  def make_board
+    @board = []
+    7.times do |i|
+      @board << []
+      7.times do |j|
+        @board[i] << ' '
+      end
+    end
+    @board
   end
-
+  
+  def get_players(count=nil)
+    @players = []
+    count = player_input(0, 2) unless count
+    count.times { @players << Human.new }
+    (2 - count).times { @players << Comp.new }
+    @players
+  end
 end
