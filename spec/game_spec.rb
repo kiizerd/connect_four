@@ -64,16 +64,16 @@ describe Game do
     subject(:game_moves) { described_class.new }
     let(:moves) { game_moves.get_moves }
 
-    xit "should return an array" do
+    it "should return an array" do
       expect(moves).to be_an(Array)
     end
 
-    xit "should call Player#make_move on players array" do
-      
-    end
-
-    xit "should call check_move" do
-      
+    it "should call Player#make_move on players array" do
+      players = game_moves.get_players
+      players.each do |player|
+        allow(player).to receive(:make_move).and_return(rand 7)
+      end
+      expect(players).to all( receive(:make_move) )
     end
   end
 

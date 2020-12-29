@@ -1,7 +1,13 @@
 require_relative 'player'
 
 class Game
-  def player_input(min, max)
+
+  def initialize
+    make_board
+    get_players
+  end
+
+  def player_input(min, max) ##
     input = gets.chomp.to_i
     until verify_input(input, min, max)
       input = gets.chomp.to_i
@@ -11,6 +17,11 @@ class Game
 
   def verify_input(input, min, max)
     return input >= min && input <= max ? input : false 
+  end
+
+  def get_moves
+    moves = @players.map { |player| player.make_move }    
+    moves
   end
 
   def make_board
@@ -27,8 +38,8 @@ class Game
   def get_players(count=nil)
     @players = []
     count = player_input(0, 2) unless count
-    count.times { @players << Human.new }
-    (2 - count).times { @players << Comp.new }
+    count.times { @players << Human.new(self) }
+    (2 - count).times { @players << Comp.new(self) }
     @players
   end
 end
