@@ -1,52 +1,41 @@
+# frozen_string_literal: true
+
 require_relative 'player'
 require_relative 'board'
 require_relative 'display'
 require_relative 'connector'
 
 class Game
+  attr_reader :board
 
   def initialize
-    get_board
+    @board = GameBoard.new
     get_players 1
   end
 
-  def player_input(min, max)        # loops until input inside range
+  # loops until input inside range
+  def player_input(min, max)
     input = gets.chomp.to_i
     input = gets.chomp.to_i until verify_input(input, min, max)
     input
   end
 
-  def verify_input(input, min, max) # returns input / false if outside range
-    return input >= min && input <= max ? input : false 
+  # returns input / false if outside range
+  def verify_input(input, min, max)
+    input >= min && input <= max ? input : false
   end
 
-  def get_moves                     # returns each players #make_move
-    moves = @players.map { |player| player.make_move }    
-    moves
+  # returns each players #make_move
+  def get_moves
+    @players.map(&:make_move)
   end
 
-  def check_move(move)              # returns move / false if position taken
-    check = @board[-1][move - 1] == ' '
-    return check ? move : check_column(move - 1)
-  end
-
-  def check_column(col)             # returns first open row / false if column full
-    @board[0..-2].map { |r| r[col] }.each_with_index do |pos, ind|
-      return ind + 2 if pos == ' '
-    end
-    false
-  end
-
-  def get_board                     # returns empty 6x7 grid / 2d-array
-    @board = Array.new(6) { Array.new(7, ' ') }
-    @board
-  end                               # resets @board instance variable
-  
-  def get_players(humans=nil)       # returns array of new Players 
+  # returns array of new Players
+  def get_players(humans = nil)
     @players = []
     count = humans.nil? ? player_input(0, 2) : humans
     count.times { @players << Human.new(self) }
     (2 - count).times { @players << Comp.new(self) }
     @players
-  end                               # resets @players instance variable
+  end
 end

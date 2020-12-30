@@ -1,19 +1,19 @@
-class Player
+# frozen_string_literal: true
 
+class Player
   def initialize(game)
     @game = game
   end
 
-  def make_move # returns move / false if taken
+  # returns move / false if taken
+  def make_move
     move = (rand 6) + 1
-    return @game.check_move(move) ? move : false
+    @game.board.check_move(move) ? move : false
   end
 end
 
 class Human < Player
-
 end
 
 class Comp < Player
-  
 end
