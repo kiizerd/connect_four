@@ -81,7 +81,7 @@ describe Game do
   describe "#check_move" do
     
     subject(:game_check) { described_class.new }
-    let(:board) { game_check.make_board }
+    let(:board) { game_check.get_board }
 
     context "when move is taken" do
       before do
@@ -101,7 +101,8 @@ describe Game do
 
     context "when move is good" do
       it "should return move" do
-        
+        check = game_check.check_move(1)
+        expect(check).to eq(1)
       end
     end
   end
@@ -109,11 +110,11 @@ describe Game do
   describe "#check_column" do
     
     subject(:game_column) { described_class.new }
-    let(:board) { game_column.make_board }
+    let(:board) { game_column.get_board }
 
     context "column is full" do
       before do
-        7.times { |i| board[i - 1][0] = 'O' }
+        6.times { |i| board[i - 1][0] = 'O' }
       end
       
       it "should return false" do
@@ -135,20 +136,20 @@ describe Game do
     
     context "top row is empty" do
       before do
-        6.times { |i| board[i - 1][0] = 'O' }
+        5.times { |i| board[i - 1][0] = 'O' }
       end
 
-      it "should return 7" do
+      it "should return 6" do
         check = game_column.check_column(0)
-        expect(check).to eq(7)
+        expect(check).to eq(6)
       end
     end
   end
 
-  describe "#make_board" do
+  describe "#get_board" do
 
     subject(:game_board) { described_class.new }
-    let(:board) { game_board.make_board }
+    let(:board) { game_board.get_board }
 
     context "on game start" do
       it "should return an Array" do
@@ -159,7 +160,7 @@ describe Game do
         expect(board[0]).to all( eq(' ') )
       end
 
-      it "should return a 7x7 grid" do
+      it "should return a 6x7 grid" do
         check_array = board.all? { |elem| elem.is_a? Array }
         check_length = board.all? { |ary| ary.length == 7 }
         mega_check = check_array && check_length
@@ -195,8 +196,28 @@ describe Game do
     end
   end
 
-  describe "#win_game?" do
+  describe "#look_for_4" do
 
+    subject(:game_look) { described_class.new }
+    let(:board) { game_look.make_board }
+
+    context "4 in a row found" do
+      before do
+        4.times { |i| board[-1][i] = 'O' }
+      end
+
+      xit "should return winner" do
+        winner = game_look.look_for_4
+        expect(winner.piece).to eq('O')  
+      end
+    end
+
+    context "4 not found" do
+      xit "should return false" do
+        winner = game_look.look_for_4
+        expect(winner).to be(false)
+      end
+    end
   end
 
   describe "#game_over" do
