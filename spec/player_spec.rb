@@ -9,7 +9,8 @@ describe Player do
     let(:game) { instance_double('Game') }
 
     before do
-      allow(game).to receive(:check_move).and_return(true)
+      allow(game).to receive(:board).and_return(instance_double('GameBoard'))
+      allow(game.board).to receive(:check_move).and_return(true)
     end
 
     it 'returns a number between 1 and 7' do
@@ -18,14 +19,8 @@ describe Player do
     end
 
     it 'calls Game#check_move' do
-      expect(game).to receive(:check_move)
+      expect(game.board).to have_received(:check_move)
       player_move.make_move
     end
   end
-end
-
-describe Human do
-end
-
-describe Comp do
 end

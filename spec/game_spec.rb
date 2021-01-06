@@ -1,21 +1,14 @@
 # frozen_string_literal: true
-
+require 'stringio'
 require './lib/game'
 
 describe Game do
   describe '#player_input' do
     subject(:game_input) { described_class.new }
-
-    it 'attempts to verify input' do
-      input = '3'
-      allow(subject).to receive(:gets).and_return(input)
-      allow(subject).to receive(:verify_input).and_return(true)
-      expect(subject).to receive(:verify_input).with(Integer, Integer, Integer)
-      game_input.player_input(0, 4)
-    end
+    let(:good_input) { StringIO.new('1\n') }
+    let(:bad_then_good) { StringIO.new('14\n9\n2\n') }
 
     it 'handles different ranges' do
-      allow(subject).to receive(:verify_input).and_return(true)
       expect do
         game_input.player_input(0, 2)
         game_input.player_input(1, 7)
@@ -23,16 +16,14 @@ describe Game do
     end
 
     it 'loops until input within range' do
-      invalid = '7'
-      valid = '3'
-      allow(subject).to receive(:gets).and_return(invalid, invalid, valid)
-      expect(subject).to receive(:gets).exactly(3).times
+      $stdin = bad_then_good
       game_input.player_input(1, 4)
+      expect(game_input).to receive(:gets).exactly(3).times
+      $stdin = STDIN
     end
 
     it 'returns input as Integer' do
       input = '3'
-      allow(subject).to receive(:gets).and_return(input)
       test = game_input.player_input(1, 5)
       expect(test).to eq(input.to_i)
     end
@@ -41,7 +32,7 @@ describe Game do
   describe '#verify_input' do
     subject(:game_verify) { described_class.new }
 
-    context 'given bad input' do
+    context 'when given bad input' do
       it 'returns false' do
         input = 6
         test = game_verify.verify_input(input, 0, 4)
@@ -49,7 +40,7 @@ describe Game do
       end
     end
 
-    context 'given good input' do
+    context 'when given good input' do
       it 'returns given input' do
         input = 2
         test = game_verify.verify_input(input, 0, 2)
@@ -58,7 +49,7 @@ describe Game do
     end
   end
 
-  describe '#get_moves' do
+  describe '#players_moves' do
     subject(:game_moves) { described_class.new }
 
     let(:moves) { game_moves.get_moves }
@@ -69,10 +60,8 @@ describe Game do
 
     it 'calls Player#make_move on players array' do
       players = game_moves.get_players
-      players.each do |player|
-        allow(player).to receive(:make_move).and_return(rand(7))
-      end
-      expect(players).to all(receive(:make_move))
+      players.each { |player| allow(player).to receive(:make_move).and_return(rand(7)) }
+      expect(players).to all(have_received(:make_move))
       game_moves.get_moves
     end
   end
@@ -83,21 +72,18 @@ describe Game do
     let(:players) { game_players.get_players }
     let(:comp_players) { game_players.get_players(0) }
 
-    before do
-      allow(subject).to receive(:player_input).and_return(2)
-    end
-
     it 'returns array of Player objects' do
       expect(players).to all(be_a(Player))
     end
 
-    context '2 human players' do
+    context 'with 2 human players' do
       it 'returns array of all Human players' do
+        players = game_players.get_players 2
         expect(players).to all(be_a(Human))
       end
     end
 
-    context '2 Comp players' do
+    context 'with 2 Comp players' do
       it 'returns array of all Comp players' do
         expect(comp_players).to all(be_a(Comp))
       end
@@ -109,18 +95,18 @@ describe Game do
 
     let(:board) { game_look.make_board }
 
-    context '4 in a row found' do
+    context 'when 4 in a row found' do
       before do
         4.times { |i| board[-1][i] = 'O' }
       end
 
-      xit 'should return winner' do
+      xit 'returns winner' do
         winner = game_look.look_for_4
         expect(winner.piece).to eq('O')
       end
     end
 
-    context '4 not found' do
+    context 'when 4 not found' do
       xit 'should return false' do
         winner = game_look.look_for_4
         expect(winner).to be(false)
@@ -129,5 +115,6 @@ describe Game do
   end
 
   describe '#game_over' do
+    # gasdg
   end
 end

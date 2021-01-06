@@ -5,6 +5,7 @@ require_relative 'board'
 require_relative 'display'
 require_relative 'connector'
 
+# main game functionality
 class Game
   attr_reader :board
 
@@ -15,6 +16,7 @@ class Game
 
   # loops until input inside range
   def player_input(min, max)
+    puts "enter a number between #{min}-#{max}"
     input = gets.chomp.to_i
     input = gets.chomp.to_i until verify_input(input, min, max)
     input
@@ -26,7 +28,7 @@ class Game
   end
 
   # returns each players #make_move
-  def get_moves
+  def players_moves
     @players.map(&:make_move)
   end
 
