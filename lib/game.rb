@@ -15,10 +15,10 @@ class Game
   end
 
   # loops until input inside range
-  def player_input(min, max)
-    puts "enter a number between #{min}-#{max}"
+  def player_input(min, max, player=@players.first)
+    puts "input a number"
     input = gets.chomp.to_i
-    input = gets.chomp.to_i until verify_input(input, min, max)
+    input = gets.chomp.to_i until verify_input(input.to_i, min, max)
     input
   end
 

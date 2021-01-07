@@ -5,27 +5,18 @@ require './lib/game'
 describe Game do
   describe '#player_input' do
     subject(:game_input) { described_class.new }
-    let(:good_input) { StringIO.new('1\n') }
-    let(:bad_then_good) { StringIO.new('14\n9\n2\n') }
-
-    it 'handles different ranges' do
-      expect do
-        game_input.player_input(0, 2)
-        game_input.player_input(1, 7)
-      end.not_to raise_error
-    end
-
+      
     it 'loops until input within range' do
-      $stdin = bad_then_good
-      game_input.player_input(1, 4)
-      expect(game_input).to receive(:gets).exactly(3).times
-      $stdin = STDIN
+      players = game_input.get_players 1
+      allow(game_input).to receive(:gets).and_return("9\n","6\n")
+      expect(game_input).to receive(:gets).twice
+      game_input.player_input(1, 7)
     end
 
-    it 'returns input as Integer' do
-      input = '3'
-      test = game_input.player_input(1, 5)
-      expect(test).to eq(input.to_i)
+    it 'returns input as integer' do
+      allow(game_input).to receive(:gets).and_return("2\n")
+      input = game_input.player_input(1, 4)
+      expect(input).to eq(2)
     end
   end
 
@@ -51,18 +42,19 @@ describe Game do
 
   describe '#players_moves' do
     subject(:game_moves) { described_class.new }
-
-    let(:moves) { game_moves.get_moves }
-
+    
     it 'returns an array' do
+      moves = game_moves.players_moves
       expect(moves).to be_an(Array)
     end
 
-    it 'calls Player#make_move on players array' do
-      players = game_moves.get_players
-      players.each { |player| allow(player).to receive(:make_move).and_return(rand(7)) }
+    it 'calls Player#make_move on each players array' do
+      players = game_moves.instance_variable_get(:@players)
+      players.each do |p|
+        allow(p).to receive(:make_move).and_return(rand(6) + 1)
+      end
+      game_moves.players_moves
       expect(players).to all(have_received(:make_move))
-      game_moves.get_moves
     end
   end
 
@@ -88,33 +80,5 @@ describe Game do
         expect(comp_players).to all(be_a(Comp))
       end
     end
-  end
-
-  describe '#look_for_4' do
-    subject(:game_look) { described_class.new }
-
-    let(:board) { game_look.make_board }
-
-    context 'when 4 in a row found' do
-      before do
-        4.times { |i| board[-1][i] = 'O' }
-      end
-
-      xit 'returns winner' do
-        winner = game_look.look_for_4
-        expect(winner.piece).to eq('O')
-      end
-    end
-
-    context 'when 4 not found' do
-      xit 'should return false' do
-        winner = game_look.look_for_4
-        expect(winner).to be(false)
-      end
-    end
-  end
-
-  describe '#game_over' do
-    # gasdg
   end
 end
