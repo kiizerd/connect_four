@@ -14,6 +14,14 @@ class Game
     get_players 1
   end
 
+  def start_game
+    42.times do |i|
+      players_moves.each { |move| board.make_move }
+
+    end
+    game_over
+  end
+
   # loops until input inside range
   def player_input(min, max, player=@players.first)
     puts "input a number"
@@ -33,11 +41,17 @@ class Game
   end
 
   # returns array of new Players
-  def get_players(humans = nil)
+  def get_players(humans=nil)
     @players = []
     count = humans.nil? ? player_input(0, 2) : humans
     count.times { @players << Human.new(self) }
     (2 - count).times { @players << Comp.new(self) }
     @players
+  end
+
+  private
+
+  def game_over(winner=nil)
+
   end
 end

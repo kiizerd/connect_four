@@ -1,10 +1,12 @@
 # frozen_string_literal: true
+require_relative 'connector'
 
 class GameBoard
   attr_reader :board
 
   def initialize
     @board = make_board
+    @connector = Connector.new
   end
 
   # returns move / false if position taken
@@ -21,7 +23,12 @@ class GameBoard
     false
   end
 
+  # generates empty grid
   def make_board
     Array.new(6) { Array.new(7, ' ') }
+  end
+
+  def game_over(winner)
+    puts "#{winner} has won!"
   end
 end
