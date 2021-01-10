@@ -1,20 +1,23 @@
 # connect_four
 Connect 4 board game played in the terminal. Made with Ruby
 
-# Game
+## Game
 -- Handles main game loop, user input and references to other game objects
-## Methods
-### #player_input(min, max)
-### #verify_input(min, max)
-# Player
+### Methods
+-- #player_input(min, max)
+-- #verify_input(min, max)
+-- #players_moves
+-- #get_players
+-- #game_over(winner=nil)
+## Player
 -- Handles move choice
-## Human Subclass
+### Human Subclass
 -- Gets move from stdin
-## Comp Subclass
+### Comp Subclass
 -- Gets move from rand method
-# Display
+## Display
 -- Handles intro and anything the user sees
-# Board
+## Board
 -- Stores the game board in a grid (2D array)
-# Connector
+## Connector
 -- Pseudo graph data structure to find a line of 4 
