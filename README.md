@@ -4,11 +4,16 @@ Connect 4 board game played in the terminal. Made with Ruby
 ## Game
 -- Handles main game loop, user input and references to other game objects
 ### Methods
--- #player_input(min, max)
--- #verify_input(min, max)
--- #players_moves
--- #get_players
--- #game_over(winner=nil)
+- #player_input(min, max)
+
+- #verify_input(min, max)
+
+- #players_moves
+
+- #get_players
+
+- #game_over(winner=nil)
+
 ---
 ## Player
 -- Handles move choice
