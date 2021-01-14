@@ -9,16 +9,16 @@ class GameBoard
     @connector = Connector.new
   end
 
-  # returns move / false if position taken
-  def check_move(move)
-    check = @board[-1][move - 1] == ' '
-    check ? move : check_column(move - 1)
+  # called by game class, for each players move
+  def apply_move(move, player)
+    row = check_column(move)
+    @board[row][move - 1] = player.shape
   end
 
   # returns first open row / false if column full
   def check_column(col)
-    @board[0..-2].map { |r| r[col] }.each_with_index do |pos, ind|
-      return ind + 2 if pos == ' '
+    @board.reverse.each_with_index do |row, i|
+      return -(i + 1) if row[col - 1] == " "
     end
     false
   end

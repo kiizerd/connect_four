@@ -7,7 +7,7 @@ describe Game do
     subject(:game_input) { described_class.new }
       
     it 'loops until input within range' do
-      players = game_input.get_players 1
+      players = game_input.make_players 1
       allow(game_input).to receive(:gets).and_return("9\n","6\n")
       expect(game_input).to receive(:gets).twice
       game_input.player_input(1, 7)
@@ -58,11 +58,11 @@ describe Game do
     end
   end
 
-  describe '#get_players' do
+  describe '#make_players' do
     subject(:game_players) { described_class.new }
 
-    let(:players) { game_players.get_players }
-    let(:comp_players) { game_players.get_players(0) }
+    let(:players) { game_players.make_players }
+    let(:comp_players) { game_players.make_players(0) }
 
     it 'returns array of Player objects' do
       expect(players).to all(be_a(Player))
@@ -70,7 +70,7 @@ describe Game do
 
     context 'with 2 human players' do
       it 'returns array of all Human players' do
-        players = game_players.get_players 2
+        players = game_players.make_players 2
         expect(players).to all(be_a(Human))
       end
     end

@@ -7,17 +7,16 @@ require_relative 'connector'
 
 # main game functionality
 class Game
-  attr_reader :board
+  attr_reader :board, :players
 
   def initialize
     @board = GameBoard.new
-    get_players 1
+    make_players 1
   end
 
   def start_game
     42.times do |i|
-      players_moves.each { |move| board.make_move }
-
+      @players.each { |player| player.make_move }
     end
     game_over
   end
@@ -35,23 +34,18 @@ class Game
     input >= min && input <= max ? input : false
   end
 
-  # returns each players #make_move
-  def players_moves
-    @players.map(&:make_move)
-  end
-
   # returns array of new Players
-  def get_players(humans=nil)
+  def make_players(humans=nil)
     @players = []
     count = humans.nil? ? player_input(0, 2) : humans
-    count.times { @players << Human.new(self) }
-    (2 - count).times { @players << Comp.new(self) }
+    count.times { @players << Human.new(self.board) }
+    (2 - count).times { @players << Comp.new(self.board) }
     @players
   end
 
   private
 
   def game_over(winner=nil)
-
+    winner
   end
 end

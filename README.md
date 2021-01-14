@@ -4,13 +4,17 @@ Connect 4 board game played in the terminal. Made with Ruby
 ## Game
 -- Handles main game loop, user input and references to other game objects
 ### Methods
+- #start_game
+  Main game loop, every iteration gets each players move, checks if win conditions are met,
+  then checks if a win is possible from the current board state. If win not possible game ends inconclusively.
+
 - #player_input(min, max)
 
 - #verify_input(min, max)
 
 - #players_moves
 
-- #get_players
+- #make_players
 
 - #game_over(winner=nil)
 

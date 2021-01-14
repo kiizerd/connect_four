@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
 class Player
-  def initialize(game)
-    @game = game
+
+  attr_reader :shape
+
+  def initialize(board)
+    @board = board
+    @shape = 'O'
   end
 
   # returns move / false if taken
   def make_move
-    move = (rand 6) + 1
-    @game.board.check_move(move) ? move : false
+    move = (rand 7) + 1
+    if @board.check_column(move)
+      @board.apply_move(move, self)
+    end
   end
 end
 
