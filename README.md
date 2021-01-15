@@ -9,12 +9,13 @@ Connect 4 board game played in the terminal. Made with Ruby
   then checks if a win is possible from the current board state. If win not possible game ends inconclusively.
 
 - #player_input(min, max)
+  Called every time data is needed from STDIN. Handles player-game interactions.
 
 - #verify_input(min, max)
-
-- #players_moves
+  Ensures that data from STDIN is within provided bounds. Returns input if good, returns false if bad.
 
 - #make_players
+  
 
 - #game_over(winner=nil)
 
