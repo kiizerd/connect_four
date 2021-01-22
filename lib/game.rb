@@ -7,16 +7,30 @@ require_relative 'connector'
 
 # main game functionality
 class Game
-  attr_reader :board, :players
+  attr_reader :board, :connector, :players
 
   def initialize
     @board = GameBoard.new
+    @connector = Connector.new(@board)
     make_players 1
   end
 
-  def start_game
+  def start
+    found = false
+
+    p1 = @players.first
+    p2 = @players.last
+    current = p1
     42.times do |i|
-      @players.each { |player| player.make_move }
+      move = current.make_move
+
+      found = @connector.find_4(move)
+      if found
+        game_over(current)
+        break
+      end
+      binding.pry
+      current = current == p1 ? p2 : p1
     end
     game_over
   end
@@ -46,6 +60,6 @@ class Game
   private
 
   def game_over(winner=nil)
-    winner
+    puts "#{winner} wins"
   end
 end

@@ -4,9 +4,11 @@ class Player
 
   attr_reader :shape
 
+  @@shapes = ['O', 'X']
+
   def initialize(board)
     @board = board
-    @shape = 'O'
+    @shape = @@shapes.pop
   end
 
   # returns move / false if taken
@@ -15,6 +17,7 @@ class Player
     if @board.check_column(move)
       @board.apply_move(move, self)
     end
+    move
   end
 end
 
