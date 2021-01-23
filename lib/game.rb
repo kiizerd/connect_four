@@ -16,23 +16,14 @@ class Game
   end
 
   def start
-    found = false
-
-    p1 = @players.first
-    p2 = @players.last
+    p1, p2 = @players.first, @players.last
     current = p1
     42.times do |i|
       move = current.make_move
-
-      found = @connector.find_4(move)
-      if found
-        game_over(current)
-        break
-      end
+      break if @connector.found
       binding.pry
       current = current == p1 ? p2 : p1
     end
-    game_over
   end
 
   # loops until input inside range

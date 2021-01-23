@@ -4,6 +4,10 @@ class Connector
     @called = 0
   end
 
+  def found 
+    false
+  end
+
   # sets root at
   def find_4(move)
     column = move - 1
