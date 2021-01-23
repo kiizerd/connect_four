@@ -11,7 +11,6 @@ class Game
 
   def initialize
     @board = GameBoard.new
-    @connector = Connector.new(@board)
     make_players 1
   end
 
@@ -20,10 +19,11 @@ class Game
     current = p1
     42.times do |i|
       move = current.make_move
-      break if @connector.found
+      break if @board.connector.found
       binding.pry
       current = current == p1 ? p2 : p1
     end
+    game_over
   end
 
   # loops until input inside range
