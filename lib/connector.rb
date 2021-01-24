@@ -12,17 +12,22 @@ class Connector
 
   def start_path(move)
     root = node_from_move(move)
-    check_adjacent(root)
+    @queue = get_possibles(root)
   end
 
-  def check_adjacent(node)
-    x, y = node.first, node.last
-    potentials = {down_right: [x + 1, y + 1], up_right: [x + 1, y - 1],
-                  down_left: [x - 1, y + 1], up_left: [x - 1, y - 1],
-                  right: [x + 1, y], left: [x - 1, y],
-                  down: [x, y + 1], up: [x, y - 1]}
-    adjacent = potentials.reject { |d, n| check_bounds(n) }.values
-    possibles = adjacent.reject { |n| check_shape(node, n) }
+  def next_node(dir, node)
+
+  end
+
+  def get_possibles(node)
+    row, col = node.first, node.last
+    potentials = {up_left: [row + 1, col - 1], up_right: [row + 1, col + 1],
+                  down_left: [row - 1, col + 1], down_right: [row - 1, col - 1],
+                  up: [row + 1, col], down: [row - 1, col],
+                  right: [row, col + 1], left: [row, col - 1]}
+    pp potentials
+    adjacent = potentials.reject { |d, n| check_bounds(n) }
+    possibles = adjacent.reject { |d, n| check_shape(node, n) }
   end
 
   private
@@ -34,8 +39,8 @@ class Connector
     return false
   end
 
-  def check_shape(root, current)
-    shape = @board.reverse[root.first][root.last]
+  def check_shape(node, current)
+    shape = @board.reverse[node.first][node.last]
     return false if @board.reverse[current[0]][current[1]] == shape
     return true
   end
