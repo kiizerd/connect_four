@@ -2,8 +2,9 @@ class Connector
 
   attr_reader :board
 
-  def initialize(board)
-    @board = board
+  def initialize(gameboard)
+    @board_obj = gameboard
+    @board = gameboard.board
   end
 
   def found 
@@ -13,24 +14,27 @@ class Connector
   def start_path(move)
     root = node_from_move(move)
     @queue = get_possibles(root)
+
+    for node in @queue do
+      next_node(node[0], node[1])
+    end
   end
 
   def next_node(dir, node)
-
+    p "Direction: #{dir}"
+    p "Shape :    #{@board[node.first][node.last]}"
+    p "Node:      #{node}"
   end
 
   def get_possibles(node)
     row, col = node.first, node.last
     potentials = {up_left: [row + 1, col - 1], up_right: [row + 1, col + 1],
-                  down_left: [row - 1, col + 1], down_right: [row - 1, col - 1],
+                  down_right: [row - 1, col + 1], down_left: [row - 1, col - 1],
                   up: [row + 1, col], down: [row - 1, col],
                   right: [row, col + 1], left: [row, col - 1]}
-    pp potentials
     adjacent = potentials.reject { |d, n| check_bounds(n) }
     possibles = adjacent.reject { |d, n| check_shape(node, n) }
   end
-
-  private
 
   def check_bounds(node)
     row, col = node.first, node.last
@@ -46,7 +50,8 @@ class Connector
   end
 
   def node_from_move(move)
-    col, row = move - 1, @board.check_column(move) - 1
-    node = [row, column]
+    col, row = move - 1, -(@board_obj.check_column(move))
+    row == 1 ? row = 0 : row -= 2
+    [row, col]
   end
 end

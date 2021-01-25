@@ -6,7 +6,7 @@ class GameBoard
 
   def initialize
     @board = Array.new(6) { Array.new(7, ' ') }
-    @connector = Connector.new(@board)
+    @connector = Connector.new(self)
   end
 
   # called by each players move, sets given move in board array
@@ -15,9 +15,10 @@ class GameBoard
     @board[row][move - 1] = player.shape
   end
 
-  def check_column(col)
+# returns negative index of last found piece in move
+  def check_column(move)
     @board.reverse.each_with_index do |row, i|
-      return -(i + 1) if row[col - 1] == ' '
+      return -(i + 1) if row[move - 1] == ' '
     end
     false
   end
