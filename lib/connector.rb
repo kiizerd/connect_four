@@ -12,28 +12,70 @@ class Connector
   end
 
   def start_path(move)
+    p "-- Starting path --"
     root = node_from_move(move)
-    @queue = get_possibles(root)
+    p "node: #{root}"
 
-    for node in @queue do
-      next_node(node[0], node[1])
+    @queue = get_possibles(root)
+    p @queue
+    path_from_node root
+
+    false
+  end
+  
+  def path_from_node(root)
+    path = [['root' => root]]
+    possibles = @queue.clone
+    until possibles.empty?
+      dir = possibles.keys[0]
+      next_node = possibles[possibles.keys[0]]
+      p "dir: #{dir}"
+
+      current = [dir, next_node]
+
+      search_forward(current[0], current[1])
+
+      possibles.shift
     end
   end
 
-  def next_node(dir, node)
-    p "Direction: #{dir}"
-    p "Shape :    #{@board[node.first][node.last]}"
-    p "Node:      #{node}"
+  def search_forward(dir, node)
+    path = []
+    nodes = next_nodes(dir,node)
+    p "nodes size #{nodes.size}"
+    p nodes
+    p "#{node} -#{dir}-> #{nodes.first}:#{nodes.last}"
+  end
+
+  def search_backward(dir, node)
+    opposites = { "down_left" => 'up_right', "down_right" => "up_left",
+                  "up_left" => "down_right", "up_right" => "down_left",
+                  'right' => 'left', 'left' => "right",
+                  'up' => "down", 'down' => "up" }
+    nodes = next_nodes(opposites[dir], node)                  
+  end
+
+  def next_nodes(dir, node)
+    p "getting #{node}'s next node"
+    p "in #{dir} direction"
+    get_linear(dir, node).each do |d, next_node|
+      p "Next node: #{next_node} dir: #{d}"
+      return [d, next_node]
+    end
   end
 
   def get_possibles(node)
     row, col = node.first, node.last
-    potentials = {up_left: [row + 1, col - 1], up_right: [row + 1, col + 1],
-                  down_right: [row - 1, col + 1], down_left: [row - 1, col - 1],
-                  up: [row + 1, col], down: [row - 1, col],
-                  right: [row, col + 1], left: [row, col - 1]}
+    potentials = { "down_left" => [row - 1, col - 1], "down_right" => [row - 1, col + 1],
+                   "up_left" => [row + 1, col - 1], "up_right" => [row + 1, col + 1],
+                   'right' => [row, col + 1], 'left' => [row, col - 1],
+                   'up' => [row + 1, col], 'down' => [row - 1, col] }
     adjacent = potentials.reject { |d, n| check_bounds(n) }
-    possibles = adjacent.reject { |d, n| check_shape(node, n) }
+    possible = adjacent.reject { |d, n| check_shape(node, n) }
+  end
+
+  def get_linear(dir, node)
+    get_possibles(node).reject { |d, n| dir == d ? false : true }
   end
 
   def check_bounds(node)
@@ -50,7 +92,9 @@ class Connector
   end
 
   def node_from_move(move)
-    col, row = move - 1, -(@board_obj.check_column(move))
+    row = @board_obj.check_column(move)
+    row = row == false ? 7 : -(@board_obj.check_column(move))
+    col = move - 1
     row == 1 ? row = 0 : row -= 2
     [row, col]
   end
