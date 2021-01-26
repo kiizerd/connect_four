@@ -18,8 +18,8 @@ class Connector
 
     @queue = get_possibles(root)
     p @queue
-    path_from_node root
-
+    @path = path_from_node(root)
+    
     false
   end
   
@@ -27,24 +27,34 @@ class Connector
     path = [['root' => root]]
     possibles = @queue.clone
     until possibles.empty?
-      dir = possibles.keys[0]
-      next_node = possibles[possibles.keys[0]]
-      p "dir: #{dir}"
-
+      dir, next_node = possibles.keys[0], possibles[possibles.keys[0]]
+      p "--dir: #{dir}"
       current = [dir, next_node]
-
-      search_forward(current[0], current[1])
-
+      first_pass = search_forward(current[0], current[1])
+      second_pass = search_backward(current[0], current[1])
       possibles.shift
     end
+
   end
 
   def search_forward(dir, node)
-    path = []
+    path = [[dir, node]]
+    p "2nd node : #{node}"
     nodes = next_nodes(dir,node)
-    p "nodes size #{nodes.size}"
-    p nodes
-    p "#{node} -#{dir}-> #{nodes.first}:#{nodes.last}" unless nodes.empty?
+    unless nodes.empty?
+      p "3rd node found : #{nodes}"
+      last_node = next_nodes(dir, nodes.last)
+      unless last_node.empty?
+        p "4th node found: #{last_node}"
+        path << {nodes.first => nodes.last}
+        path << {last_node.first => last_node.last}
+      else
+        p "Last node not found, reversing"
+        search_backward(dir, nodes.last)
+      end
+    end
+    p path.size == 3 ? path : false
+    return path.size == 3 ? path : false
   end
 
   def search_backward(dir, node)
@@ -52,14 +62,15 @@ class Connector
                   "up_left" => "down_right", "up_right" => "down_left",
                   'right' => 'left', 'left' => "right",
                   'up' => "down", 'down' => "up" }
-    nodes = next_nodes(opposites[dir], node)                  
+    p "reversing #{dir}, searching from #{opposites[dir]} at #{node}"
+    path = search_forward(opposites[dir], node)
+    return false unless path
+    return path.size == 4 ? path : false
   end
 
   def next_nodes(dir, node)
-    p "getting #{node}'s next node"
-    p "in #{dir} direction"
+    p "getting #{node}'s next node in #{dir} direction"
     get_linear(dir, node).each do |d, next_node|
-      p "Next node: #{next_node} dir: #{d}"
       return [d, next_node]
     end
   end
