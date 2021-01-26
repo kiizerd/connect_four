@@ -19,7 +19,7 @@ class Game
     current = p1
     42.times do |i|
       move = current.make_move
-      break if @board.connector.found
+      break if @board.connector.found(move)
       binding.pry
       current = current == p1 ? p2 : p1
     end

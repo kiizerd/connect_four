@@ -7,8 +7,9 @@ class Connector
     @board = gameboard.board
   end
 
-  def found 
-    false
+  def found(move)
+    path = start_path(move)
+    return path ? path : false
   end
 
   def start_path(move)
@@ -17,10 +18,8 @@ class Connector
     p "node: #{root}"
 
     @queue = get_possibles(root)
-    p @queue
     @path = path_from_node(root)
-    
-    false
+    return @path ? @path : false
   end
   
   def path_from_node(root)
@@ -28,13 +27,19 @@ class Connector
     possibles = @queue.clone
     until possibles.empty?
       dir, next_node = possibles.keys[0], possibles[possibles.keys[0]]
-      p "--dir: #{dir}"
       current = [dir, next_node]
       first_pass = search_forward(current[0], current[1])
       second_pass = search_backward(current[0], current[1])
+      if first_pass
+        path += first_pass
+        return path
+      elsif second_pass
+        path += second_pass
+        return path
+      end
       possibles.shift
     end
-
+    return path.length > 1 ? path : false
   end
 
   def search_forward(dir, node)
@@ -48,12 +53,8 @@ class Connector
         p "4th node found: #{last_node}"
         path << {nodes.first => nodes.last}
         path << {last_node.first => last_node.last}
-      else
-        p "Last node not found, reversing"
-        search_backward(dir, nodes.last)
       end
     end
-    p path.size == 3 ? path : false
     return path.size == 3 ? path : false
   end
 
