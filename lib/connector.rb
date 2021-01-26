@@ -44,7 +44,7 @@ class Connector
     nodes = next_nodes(dir,node)
     p "nodes size #{nodes.size}"
     p nodes
-    p "#{node} -#{dir}-> #{nodes.first}:#{nodes.last}"
+    p "#{node} -#{dir}-> #{nodes.first}:#{nodes.last}" unless nodes.empty?
   end
 
   def search_backward(dir, node)
