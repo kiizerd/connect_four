@@ -3,65 +3,73 @@ class Connector
   attr_reader :board
 
   def initialize(gameboard)
-    @board_obj = gameboard
-    @board = gameboard.board
+    @board = gameboard
+    @graph = gameboard.board.reverse
+    @found = false
   end
 
-  def found 
-    false
+  def found
+    start_path
+
+    @found
   end
 
-  def start_path(move)
-    p "-- Starting path --"
-    root = node_from_move(move)
-    p "node: #{root}"
+  def start_path
+    root = @board.last_node
 
     @queue = get_possibles(root)
-    p @queue
-    path_from_node root
-
-    false
+    path_from_node(root)
   end
   
   def path_from_node(root)
-    path = [['root' => root]]
     possibles = @queue.clone
     until possibles.empty?
-      dir = possibles.keys[0]
-      next_node = possibles[possibles.keys[0]]
-      p "dir: #{dir}"
-
-      current = [dir, next_node]
-
-      search_forward(current[0], current[1])
+      dir       = possibles.keys[0]
+      opp       = opposites[dir]
+      tail_node = get_tail_node(dir, root)
+      
+      if get_path_length(opp, tail_node) == 4
+        @found = true
+        @path  = get_path(opp, tail_node)
+      end
 
       possibles.shift
     end
   end
 
-  def search_forward(dir, node)
-    path = []
-    nodes = next_nodes(dir,node)
-    p "nodes size #{nodes.size}"
-    p nodes
-    p "#{node} -#{dir}-> #{nodes.first}:#{nodes.last}"
-  end
-
-  def search_backward(dir, node)
-    opposites = { "down_left" => 'up_right', "down_right" => "up_left",
-                  "up_left" => "down_right", "up_right" => "down_left",
-                  'right' => 'left', 'left' => "right",
-                  'up' => "down", 'down' => "up" }
-    nodes = next_nodes(opposites[dir], node)                  
-  end
-
-  def next_nodes(dir, node)
-    p "getting #{node}'s next node"
-    p "in #{dir} direction"
-    get_linear(dir, node).each do |d, next_node|
-      p "Next node: #{next_node} dir: #{d}"
-      return [d, next_node]
+  def get_tail_node(dir, node)
+    tail = node
+    until next_node(dir, tail).nil?
+      tail = next_node(dir, tail)
     end
+
+    return tail
+  end
+
+  def get_path_length(dir, node)
+    get_path(dir, node).size
+  end
+
+  def get_path(dir, node)
+    path    = [node]
+    current = node
+    while next_node(dir, current) && path.size < 4
+      current = next_node(dir, current)
+      path << current      
+    end
+
+    return path
+  end
+
+  def opposites
+    { "down_left" => "up_right", "down_right" => "up_left",
+      "up_left" => "down_right", "up_right" => "down_left",
+      "right" => "left", "left" => "right",
+      "up" => "down", "down" => "up" }
+  end
+
+  def next_node(dir, node)
+    get_linear(dir, node)[dir]
   end
 
   def get_possibles(node)
@@ -70,32 +78,24 @@ class Connector
                    "up_left" => [row + 1, col - 1], "up_right" => [row + 1, col + 1],
                    'right' => [row, col + 1], 'left' => [row, col - 1],
                    'up' => [row + 1, col], 'down' => [row - 1, col] }
-    adjacent = potentials.reject { |d, n| check_bounds(n) }
-    possible = adjacent.reject { |d, n| check_shape(node, n) }
+    adjacent = potentials.select { |d, n| check_bounds(n) }
+    possible = adjacent.select   { |d, n| check_shape(node, n) }
   end
 
   def get_linear(dir, node)
-    get_possibles(node).reject { |d, n| dir == d ? false : true }
+    get_possibles(node).select { |d, n| dir == d ? true : false }
   end
 
   def check_bounds(node)
     row, col = node.first, node.last
-    return true if row > 5 || row < 0
-    return true if col > 6 || col < 0
-    return false
-  end
-
-  def check_shape(node, current)
-    shape = @board.reverse[node.first][node.last]
-    return false if @board.reverse[current[0]][current[1]] == shape
+    return false if row > 5 || row < 0
+    return false if col > 6 || col < 0
     return true
   end
 
-  def node_from_move(move)
-    row = @board_obj.check_column(move)
-    row = row == false ? 7 : -(@board_obj.check_column(move))
-    col = move - 1
-    row == 1 ? row = 0 : row -= 2
-    [row, col]
+  def check_shape(node, current)
+    @shape = @graph[node[0]][node[1]]
+    return true if @graph[current[0]][current[1]] == @shape
+    return false
   end
 end
