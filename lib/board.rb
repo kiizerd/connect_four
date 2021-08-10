@@ -2,23 +2,28 @@
 require_relative 'connector'
 
 class GameBoard
-  attr_reader :board, :connector
+  attr_reader :board, :last_node
 
   def initialize
     @board = Array.new(6) { Array.new(7, ' ') }
-    @connector = Connector.new(self)
   end
 
-  # called by each players move, sets given move in board array
+  def check_column(col)
+    @board[0][col] == ' '
+  end
+  
   def apply_move(move, player)
-    row = check_column(move)
-    @board[row][move - 1] = player.shape
+    col = move
+    row = get_next_row(col)
+    @board[row][col] = player.shape
+    @last_node = [-row - 1, col]
   end
 
-# returns negative index of last found piece in move
-  def check_column(move)
+  private
+
+  def get_next_row(col)
     @board.reverse.each_with_index do |row, i|
-      return -(i + 1) if row[move - 1] == ' '
+      return -(i + 1) if row[col] == ' '
     end
     false
   end
