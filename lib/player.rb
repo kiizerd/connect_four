@@ -6,23 +6,19 @@ class Player
 
   @@shapes = ['O', 'X']
 
-  def initialize(board)
-    @board = board
+  def initialize
     @shape = @@shapes.pop
   end
-
-  # returns move / false if taken
-  def make_move
-    move = (rand 7) + 1
-    if @board.check_column(move)
-      @board.apply_move(move, self)
-    end
-    move
+  
+  def get_col_choice
+    move = rand(0..6)
   end
 end
 
 class Human < Player
-
+  def get_col_choice
+    user_input(1, 7)
+  end
 end
 
 class Comp < Player
