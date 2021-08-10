@@ -7,49 +7,38 @@ require_relative 'connector'
 
 # main game functionality
 class Game
-  attr_reader :board, :connector, :players
 
   def initialize
     @board = GameBoard.new
-    make_players 1
+    @players = [Player.new, Player.new]
+    @connector = Connector.new(@board)
   end
 
   def start
     p1, p2 = @players.first, @players.last
     current = p1
     42.times do |i|
-      move = current.make_move
-      break if @board.connector.found
-      binding.pry
+      col = current.get_col_choice
+      @board.apply_move(col, current) if @board.check_column(col)
+      break if @connector.found
       current = current == p1 ? p2 : p1
     end
     game_over
   end
-
-  # loops until input inside range
-  def player_input(min, max, player=@players.first)
-    puts "input a number"
+  
+  def user_input(min, max, player=@players.first)
+    puts "Input a number between #{min} and #{max}"
     input = gets.chomp.to_i
     input = gets.chomp.to_i until verify_input(input.to_i, min, max)
     input
   end
 
-  # returns input / false if outside range
+  private
+
   def verify_input(input, min, max)
     input >= min && input <= max ? input : false
   end
-
-  # returns array of new Players
-  def make_players(humans=nil)
-    @players = []
-    count = humans.nil? ? player_input(0, 2) : humans
-    count.times { @players << Human.new(self.board) }
-    (2 - count).times { @players << Comp.new(self.board) }
-    @players
-  end
-
-  private
-
+  
   def game_over(winner=nil)
     puts "#{winner} wins"
   end
