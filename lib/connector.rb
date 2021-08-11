@@ -5,22 +5,17 @@ class Connector
   def initialize(gameboard)
     @board = gameboard
     @graph = gameboard.board.reverse
-    @found = false
+    @path_found = false
   end
 
-  def found
-    start_path
-
-    @found
-  end
-
-  def start_path
-    root = @board.last_node
-
+  def found?
+    root   = @board.last_node
     @queue = get_possibles(root)
     path_from_node(root)
+
+    @path_found
   end
-  
+
   def path_from_node(root)
     possibles = @queue.clone
     until possibles.empty?
@@ -29,8 +24,8 @@ class Connector
       tail_node = get_tail_node(dir, root)
       
       if get_path_length(opp, tail_node) == 4
-        @found = true
-        @path  = get_path(opp, tail_node)
+        @path = get_path(opp, tail_node)
+        @path_found = true
       end
 
       possibles.shift
@@ -38,11 +33,9 @@ class Connector
   end
 
   def get_tail_node(dir, node)
+    return false if @graph[node[0]][node[1]] == ' '
     tail = node
-    until next_node(dir, tail).nil?
-      tail = next_node(dir, tail)
-    end
-
+    tail = get_next_node(dir, tail) while get_next_node(dir, tail)
     return tail
   end
 
@@ -53,49 +46,61 @@ class Connector
   def get_path(dir, node)
     path    = [node]
     current = node
-    while next_node(dir, current) && path.size < 4
-      current = next_node(dir, current)
+    while get_next_node(dir, current) && path.size < 4
+      current = get_next_node(dir, current)
       path << current      
     end
 
     return path
   end
 
-  def opposites
-    { "down_left" => "up_right", "down_right" => "up_left",
-      "up_left" => "down_right", "up_right" => "down_left",
-      "right" => "left", "left" => "right",
-      "up" => "down", "down" => "up" }
-  end
-
-  def next_node(dir, node)
-    get_linear(dir, node)[dir]
+  def get_next_node(dir, root)
+    node = get_possibles(root).select { |d, n| true if dir == d }[dir]
+    return node.nil? ? false : node
   end
 
   def get_possibles(node)
-    row, col = node.first, node.last
-    potentials = { "down_left" => [row - 1, col - 1], "down_right" => [row - 1, col + 1],
-                   "up_left" => [row + 1, col - 1], "up_right" => [row + 1, col + 1],
-                   'right' => [row, col + 1], 'left' => [row, col - 1],
-                   'up' => [row + 1, col], 'down' => [row - 1, col] }
-    adjacent = potentials.select { |d, n| check_bounds(n) }
-    possible = adjacent.select   { |d, n| check_shape(node, n) }
+    potentials(*node)
+      .select { |d, n| check_bounds(*n) }
+      .select { |d, n| check_shape(*node, *n) }
   end
 
-  def get_linear(dir, node)
-    get_possibles(node).select { |d, n| dir == d ? true : false }
-  end
-
-  def check_bounds(node)
-    row, col = node.first, node.last
+  def check_bounds(row, col)
     return false if row > 5 || row < 0
     return false if col > 6 || col < 0
     return true
   end
 
-  def check_shape(node, current)
-    @shape = @graph[node[0]][node[1]]
-    return true if @graph[current[0]][current[1]] == @shape
-    return false
+  # Takes 2 coordinate pairs and compares the node values
+  def check_shape(r_row, r_col, n_row, n_col)
+    @shape = @graph[r_row][r_col]
+    return false if @shape == ' ' || @graph[n_row][n_col] != @shape
+    return true
+  end
+
+  def potentials(row, col)
+    {
+      'up'         => [row + 1, col],
+      'down'       => [row - 1, col],
+      'left'       => [row, col - 1],
+      'right'      => [row, col + 1],
+      "up_left"    => [row + 1, col - 1],
+      "up_right"   => [row + 1, col + 1],
+      "down_left"  => [row - 1, col - 1],
+      "down_right" => [row - 1, col + 1]
+    }
+  end
+
+  def opposites
+    {
+      "up"         => "down",
+      "down"       => "up",
+      "left"       => "right",
+      "right"      => "left",
+      "up_left"    => "down_right",
+      "up_right"   => "down_left",
+      "down_left"  => "up_right",
+      "down_right" => "up_left"
+    }
   end
 end
