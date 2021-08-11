@@ -20,7 +20,7 @@ class Game
     42.times do |i|
       col = current.get_col_choice
       @board.apply_move(col, current) if @board.check_column(col)
-      break if @connector.found
+      break if @connector.found?
       current = current == p1 ? p2 : p1
     end
     game_over
