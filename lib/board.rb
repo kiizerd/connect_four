@@ -10,6 +10,7 @@ class GameBoard
 
   def check_column(col)
     @board[0][col] == ' '
+    @last_node = [10, 10]
   end
   
   def apply_move(move, player)
