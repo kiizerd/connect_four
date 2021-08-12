@@ -18,11 +18,13 @@ class Player
 end
 
 class Human < Player
-  def get_col_choice
-    gets.chomp.to_i
+  def to_s
+    "Human"
   end
 end
 
 class Comp < Player
-
+  def to_s
+    "Comp"
+  end
 end
