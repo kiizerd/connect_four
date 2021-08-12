@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'stringio'
 require './lib/game'
 
 describe Game do
@@ -9,6 +8,16 @@ describe Game do
 
   before do
     game.instance_variable_set(:@players, [human, player])
+  end
+
+  describe '#user_input' do
+    context 'given input within bounds' do
+      before { allow(game).to receive(:gets).and_return "5" }
+      it 'returns input' do
+        input = game.user_input(1, 7)
+        expect(input).to eq 5
+      end
+    end
   end
 
   describe '#verify_input' do
