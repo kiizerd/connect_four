@@ -5,37 +5,44 @@ require_relative 'board'
 require_relative 'display'
 require_relative 'connector'
 
-# main game functionality
 class Game
 
   def initialize
-    @board = GameBoard.new
-    @players = [Player.new, Player.new]
+    @board     = GameBoard.new
+    @players   = [Human.new('X'), Player.new('O')]
     @connector = Connector.new(@board)
   end
 
   def start
-    p1, p2 = @players.first, @players.last
+    p1, p2  = @players
     current = p1
     42.times do |i|
-      col = current.get_col_choice
-      @board.apply_move(col, current) if @board.check_column(col)
+      try_move(current)
       break if @connector.found?
       current = current == p1 ? p2 : p1
     end
     game_over
   end
+
+  def try_move player
+    col = player.move
+    if @board.check_column col
+      @board.apply_move player 
+      return true
+    end
+    return false
+  end
   
   def user_input(min, max, player=@players.first)
     puts "Input a number between #{min} and #{max}"
     input = gets.chomp.to_i
-    input = gets.chomp.to_i until verify_input(input.to_i, min, max)
+    # TODO - Add a call to check input against some strings
+    # that correspond to commands for the game i.e - exit, restart, stats
+    input = gets.chomp.to_i until verify_input(min, max, input)
     input
   end
 
-  private
-
-  def verify_input(input, min, max)
+  def verify_input(min, max, input)
     input >= min && input <= max ? input : false
   end
   

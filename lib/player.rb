@@ -4,10 +4,12 @@ class Player
 
   attr_reader :shape
 
-  @@shapes = ['O', 'X']
+  def initialize shape
+    @shape = shape
+  end
 
-  def initialize
-    @shape = @@shapes.pop
+  def move
+    get_col_choice
   end
   
   def get_col_choice
@@ -17,7 +19,7 @@ end
 
 class Human < Player
   def get_col_choice
-    user_input(1, 7)
+    gets.chomp.to_i
   end
 end
 

@@ -6,15 +6,15 @@ class GameBoard
 
   def initialize
     @board = Array.new(6) { Array.new(7, ' ') }
-  end
-
-  def check_column(col)
-    @board[0][col] == ' '
     @last_node = [10, 10]
   end
+
+  def check_column col
+    @board[0][col] == ' '
+  end
   
-  def apply_move(move, player)
-    col = move
+  def apply_move player
+    col = player.move
     row = get_next_row(col)
     @board[row][col] = player.shape
     @last_node = [-row - 1, col]
@@ -22,7 +22,7 @@ class GameBoard
 
   private
 
-  def get_next_row(col)
+  def get_next_row col
     @board.reverse.each_with_index do |row, i|
       return -(i + 1) if row[col] == ' '
     end
