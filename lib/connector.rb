@@ -1,10 +1,11 @@
 class Connector
 
-  attr_reader :board
+  attr_reader :path
 
   def initialize(gameboard)
     @board = gameboard
     @graph = gameboard.board.reverse
+    @path  = []
     @path_found = false
   end
 
