@@ -13,10 +13,9 @@ class GameBoard
     @board[0][col] == ' '
   end
   
-  def apply_move player
-    col = player.move
+  def apply_move(col, shape)
     row = get_next_row(col)
-    @board[row][col] = player.shape
+    @board[row][col] = shape
     @last_node = [-row - 1, col]
   end
 
